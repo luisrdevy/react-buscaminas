@@ -1,26 +1,200 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { useEffect, useReducer } from "react";
+import { matrixReducer, generateNewMatrix, minas } from "./reducers/matrix";
+import { UIReducer, getUIInitialState } from "./reducers/ui";
+import { HiOutlineCog, HiOutlineInformationCircle } from "react-icons/hi";
+import { useMediaQuery } from "beautiful-react-hooks";
 
-function App() {
+const px = 32;
+
+const App = () => {
+  const [matrix, dispatch] = useReducer(matrixReducer, generateNewMatrix());
+  const [ui, uiDispatch] = useReducer(UIReducer, getUIInitialState());
+  const onMovil = useMediaQuery("(max-width: 768px)");
+  useEffect(() => {
+    const countIfWin = () => {
+      let open = 0;
+      matrix.forEach((row) => {
+        row.forEach((col) => {
+          open += col.active ? 1 : 0;
+        });
+      });
+      uiDispatch({
+        type: "win",
+        payload: open === matrix.length * matrix[0].length - minas,
+      });
+    };
+    countIfWin();
+  }, [matrix]);
+  const restart = () => {
+    dispatch({
+      type: "restart",
+    });
+  };
+  const handleClick = (x: number, y: number) => {
+    if (ui.win) return;
+    dispatch({
+      type: "click",
+      payload: {
+        x,
+        y,
+      },
+    });
+  };
+  const toggleInstructions = () => {
+    uiDispatch({
+      type: "instructions",
+      payload: !ui.instructions,
+    });
+  };
+  const toggleConfig = () => {
+    uiDispatch({
+      type: "config",
+      payload: !ui.config,
+    });
+  };
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+    <div
+      style={{
+        margin: "1rem auto",
+        width: "90%",
+        maxWidth: "1000px",
+      }}
+    >
+      <header>
+        <h1 style={{ textAlign: "center", margin: "2rem 0" }}>Quedé... 🤡</h1>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
         >
-          Learn React
-        </a>
+          {!onMovil && (
+            <button
+              onClick={toggleInstructions}
+              style={{
+                margin: ".5rem",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                fontSize: "2rem",
+              }}
+            >
+              <HiOutlineInformationCircle />
+            </button>
+          )}
+          <button
+            style={{
+              margin: ".5rem",
+              padding: ".3rem .7rem",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              fontSize: "1.15rem",
+              fontWeight: "bold",
+            }}
+            onClick={restart}
+          >
+            restart
+          </button>
+          {!onMovil && (
+            <button
+              onClick={toggleConfig}
+              style={{
+                margin: ".5rem",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                fontSize: "2rem",
+              }}
+            >
+              <HiOutlineCog />
+            </button>
+          )}
+        </div>
       </header>
+      <main
+        style={{
+          margin: "1rem 0",
+          display: "grid",
+          gridTemplateColumns: "repeat(3, 1fr)",
+          gap: "1rem",
+        }}
+      >
+        <section>
+          {ui.instructions && !onMovil && (
+            <p>
+              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Placeat
+              facere reiciendis labore ipsam odio iure! Architecto
+              necessitatibus cupiditate voluptatum laudantium perferendis
+              nostrum sunt harum eius provident quas ex, rerum error temporibus
+              consequuntur corrupti quisquam, quo dolore magnam possimus dolorem
+              vel.
+            </p>
+          )}
+        </section>
+        <section
+          id="matrix"
+          style={{
+            width: 9 * px,
+            height: 9 * px,
+            display: "grid",
+            gridTemplateColumns: "repeat(9, 1fr)",
+            gap: "1px",
+            margin: "0 auto",
+          }}
+        >
+          {matrix.map((row, i) =>
+            row.map(({ value, active }, j) => {
+              return (
+                <div
+                  key={`${i}${j}`}
+                  style={{
+                    background: active ? "#f4eee8" : "#325288",
+                    color: active ? "#000" : "#f4eee8",
+                    width: px,
+                    height: px,
+                    borderRadius: 3,
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                  onClick={() => handleClick(i, j)}
+                >
+                  {/** style={{ display: active ? "block" : "none" }} */}
+                  <p style={{ display: active || ui.win ? "block" : "none" }}>
+                    {value === -1 ? "🤡" : value ? value : " "}
+                  </p>
+                </div>
+              );
+            })
+          )}
+        </section>
+        <section>
+          {ui.config && !onMovil && (
+            <p>
+              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facere
+              vero modi accusantium. Nam minus, magnam eligendi beatae natus
+              tempora voluptates quod nobis dolores eaque, nihil ipsa quia culpa
+              nostrum! Harum amet magni nobis delectus in similique optio
+              numquam necessitatibus! Expedita.
+            </p>
+          )}
+        </section>
+      </main>
+      {ui.win && (
+        <h1 style={{ textAlign: "center", margin: "1rem 0" }}>Ganaste!</h1>
+      )}
+      <footer>
+        <p style={{ textAlign: "center", margin: "2rem 0" }}>
+          Created by{" "}
+          <a rel="stylesheet" href="https://www.github.com/luisrdevy">
+            luisrdevy
+          </a>
+        </p>
+      </footer>
     </div>
   );
-}
+};
 
 export default App;
