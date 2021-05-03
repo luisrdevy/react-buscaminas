@@ -123,14 +123,14 @@ const App = () => {
       >
         <section>
           {ui.instructions && !onMovil && (
-            <p>
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Placeat
-              facere reiciendis labore ipsam odio iure! Architecto
-              necessitatibus cupiditate voluptatum laudantium perferendis
-              nostrum sunt harum eius provident quas ex, rerum error temporibus
-              consequuntur corrupti quisquam, quo dolore magnam possimus dolorem
-              vel.
-            </p>
+            <ul>
+              <li>Tap on the game squares to test for find a clown.</li>
+              <li>
+                If you tap a clown, your lose, otherwise, will be unlocked ceils
+                with numbers indicating the nummber of clowns around the ceil.
+              </li>
+              <li>Wins if tap all ceils without clown.</li>
+            </ul>
           )}
         </section>
         <section
@@ -171,15 +171,7 @@ const App = () => {
           )}
         </section>
         <section>
-          {ui.config && !onMovil && (
-            <p>
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facere
-              vero modi accusantium. Nam minus, magnam eligendi beatae natus
-              tempora voluptates quod nobis dolores eaque, nihil ipsa quia culpa
-              nostrum! Harum amet magni nobis delectus in similique optio
-              numquam necessitatibus! Expedita.
-            </p>
-          )}
+          {ui.config && !onMovil && <p>settings comming soon...</p>}
         </section>
       </main>
       {ui.win && (
